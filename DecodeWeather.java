@@ -15,6 +15,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class DecodeWeather {
 
+	private static MessageDigest md5 = null;
+	static {
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -44,7 +53,7 @@ public class DecodeWeather {
 		}
 	}
 
-	static void decodeResponse(String str) throws Exception {
+	public static String decodeResponse(String str) throws Exception {
 		String CIPHER_ALGORITHM_CBC_NoPadding = "AES/CBC/NoPadding";
 		String KEY_ALGORITHM = "AES";
 		Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC_NoPadding);
@@ -57,9 +66,10 @@ public class DecodeWeather {
 		int last = response.lastIndexOf("}");
 		response = response.substring(0, last + 1);
 		System.out.println(response);
+		return response;
 	}
 
-	public static String decodeUnicode(String str) {
+	private static String decodeUnicode(String str) {
 		Charset set = Charset.forName("UTF-16");
 		Pattern p = Pattern.compile("\\\\u([0-9a-fA-F]{4})");
 		Matcher m = p.matcher(str);
@@ -97,7 +107,7 @@ public class DecodeWeather {
 	 * @return 字节数组
 	 * @throws
 	 */
-	public static byte[] hexString2Bytes(String src) {
+	private static byte[] hexString2Bytes(String src) {
 		int l = src.length() / 2;
 		byte[] ret = new byte[l];
 		for (int i = 0; i < l; i++) {
@@ -107,12 +117,7 @@ public class DecodeWeather {
 		return ret;
 	}
 
-	static byte[] getIV() {
-		String iv = "2345tqIv_shiqing"; // IV length: must be 16 bytes long
-		return iv.getBytes();
-	}
-
-	public static String getMd5(String str) {
+	private static String getMd5(String str) {
 		byte[] bs = md5.digest(str.getBytes());
 		StringBuilder sb = new StringBuilder(40);
 		for (byte x : bs) {
@@ -125,16 +130,8 @@ public class DecodeWeather {
 		return sb.toString();
 	}
 
-	private static MessageDigest md5 = null;
-	static {
-		try {
-			md5 = MessageDigest.getInstance("MD5");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
 
-	public static String sendGet(String url, String param) {
+	private static String sendGet(String url, String param) {
 		String result = "";
 		BufferedReader in = null;
 		try {
